@@ -4,7 +4,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {e.
     const res = await fetch('http://localhost:3000/api/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: json.stringify({correo, contraseña})
+        body: JSON.stringify({correo, contraseña})
             }
         );
 

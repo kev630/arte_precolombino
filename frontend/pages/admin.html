@@ -4,10 +4,35 @@
   <meta charset="UTF-8" />
   <title>Admin</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script>
+    // Verificar sesión activa
+    document.addEventListener('DOMContentLoaded', () => {
+      const rol = localStorage.getItem('rol');
+
+      // Si no hay rol o no es admin, redirigir a index
+      if (!rol || rol !== 'admin') {
+        window.location.replace('/index.html');
+      }
+
+      // Evitar cargar desde caché cuando se usa el botón "Atrás"
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted || window.performance?.navigation.type === 2) {
+          window.location.reload();
+        }
+      });
+    });
+  </script>
 </head>
 <body>
   <h2>Bienvenido Admin</h2>
   <button id="logoutBtn">Cerrar sesión</button>
 
+  <script>
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      // Limpiar sesión y redirigir reemplazando historial
+      localStorage.clear();
+      window.location.replace('/index.html');
+    });
+  </script>
 </body>
 </html>

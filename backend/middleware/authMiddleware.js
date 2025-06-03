@@ -1,4 +1,11 @@
 import { pool } from '../config/db.js';
+
+// Nueva función auxiliar
+async function obtenerIdRolPorNombre(nombreRol) {
+    const [rows] = await pool.query('SELECT id FROM roles WHERE nombre = ?', [nombreRol]);
+    return rows[0]?.id;
+}
+
 export async function verificarRol(req, res, next) {
     try {
         const {correo, rol } = req.body;
