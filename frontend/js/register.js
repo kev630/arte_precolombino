@@ -13,7 +13,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const res = await fetch('http://localhost:3000/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, apellido, email, cedula, telefono, direccion, fecha_registro, contraseña, id_rol }),
+        body: JSON.stringify({ nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, contraseña, id_rol }),
     });
     const data = await res.json();
     alert(data.message);

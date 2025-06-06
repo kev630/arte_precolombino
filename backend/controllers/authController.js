@@ -5,7 +5,7 @@ import { buscarUsuarioPorCorreo,
 } from '../models/userModel.js';
 
 export const register = async (req, res) => {
-    const {nombre, apellido, email, cedula, telefono, direccion, fecha_registro, contraseña, id_rol} = req.body;
+    const {nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, contraseña, id_rol} = req.body;
     // Validación básica
     if (!nombre || !apellido || !correo || !cedula || !telefono || !direccion || !fecha_registro || !contraseña || !id_rol) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios' });
