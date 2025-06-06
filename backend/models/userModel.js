@@ -1,9 +1,9 @@
 import { pool } from '../config/db.js';
 //funcion crearUsuario
-export const crearUsuario = async(nombre, correo, contraseña, id_rol) => {
+export const crearUsuario = async(nombre, apellido, email, cedula, telefono, direccion, fecha_registro, contraseña, id_rol) => {
     const [result] = await pool.query(
-  'INSERT INTO usuarios(nombre, correo, contraseña, id_rol) VALUES (?, ?, ?, ?)',
-  [nombre, correo, contraseña, id_rol]);
+  'INSERT INTO usuarios(nombre, apellido, email, cedula, telefono, direccion, fecha_registro, contraseña, id_rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+  [nombre, apellido, email, cedula, telefono, direccion, fecha_registro, contraseña, id_rol]);
     return result.insertId;
 };
 // funcion buscarUsuarioPorCorreo
