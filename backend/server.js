@@ -21,3 +21,7 @@ app.get('/', (req, res) => {
 app.listen(3000, ()=> {
     console.log('Servidor corriendo en http://localhost:3000');
 });
+
+//------------------------ nuevo codigo
+import ventaRoutes from './routes/ventaRoutes.js';
+app.use('/api/ventas', ventaRoutes);
