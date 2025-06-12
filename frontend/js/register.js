@@ -1,21 +1,63 @@
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const nombre = document.getElementById('nombre').value;
-    const apellido = document.getElementById ('apellido').value;
-    const correo = document.getElementById('correo').value;
-    const cedula = document.getElementById('cedula').value;
-    const telefono = document.getElementById('telefono').value;
-    const direccion = document.getElementById('direccion').value;
-    const fecha_registro = document.getElementById('fecha_registro').value;
-    const contraseña = document.getElementById('contraseña').value;
-    const id_rol = document.getElementById('rol').value;
+// register.js
 
-    const res = await fetch('http://localhost:3000/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, contraseña, id_rol }),
+// Función de ayuda para evitar errores si falta un ID
+const getValue = (id) => {
+    const el = document.getElementById(id);
+    if (!el) throw new Error(`Elemento con id="${id}" no encontrado`);
+    return el.value;
+};
+
+// Espera a que el DOM esté cargado
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('registroForm');
+    if (!form) {
+        console.error('Formulario no encontrado');
+        return;
+    }
+
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        try {
+            const nombre = getValue('nombre');
+            const apellido = getValue('apellido');
+            const correo = getValue('correo');
+            const cedula = getValue('cedula');
+            const telefono = getValue('telefono');
+            const direccion = getValue('direccion');
+            const fecha_registro = getValue('fecha_registro');
+            const contraseña = getValue('contrasena');
+            const id_rol = getValue('rol_id');
+
+            const response = await fetch('/api/usuarios/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                nombre,
+                apellido,
+                correo,
+                cedula,
+                telefono,
+                direccion,
+                fecha_registro,
+                contraseña,
+                id_rol
+            })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Registro exitoso');
+                window.location.href = 'login.html';
+            } else {
+                alert(data.error || 'Error al registrar');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message || 'Hubo un problema al conectar con el servidor');
+        }
     });
-    const data = await res.json();
-    alert(data.message);
-    if(res.status ===201) window.location.href = './login.html';
-})
+});

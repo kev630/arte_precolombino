@@ -18,10 +18,13 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/login.html'));
 });
 
+import ventaRoutes from './routes/ventaRoutes.js';
+app.use('/api/ventas', ventaRoutes);
+
+import productoRoutes from './routes/productoRoutes.js';
+app.use('/api/productos', productoRoutes);
+
 app.listen(3000, ()=> {
     console.log('Servidor corriendo en http://localhost:3000');
 });
 
-//------------------------ nuevo codigo
-import ventaRoutes from './routes/ventaRoutes.js';
-app.use('/api/ventas', ventaRoutes);

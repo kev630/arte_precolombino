@@ -9,8 +9,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       const rol = localStorage.getItem('rol');
 
-      // Si no hay rol o no es admin, redirigir a index
-      if (!rol || rol !== 'admin') {
+      // Si no hay rol o no es admin (rol 3), redirigir a index
+      if (!rol || rol !== '3') {
         window.location.replace('/index.html');
       }
 
@@ -24,10 +24,18 @@
   </script>
 </head>
 <body>
-  <h2>Bienvenido Admin</h2>
+  <h2 id="saludo">Bienvenido Admin</h2>
   <button id="logoutBtn">Cerrar sesión</button>
 
   <script>
+    const nombre = localStorage.getItem('nombre');
+    const apellido = localStorage.getItem('apellido');
+    const saludo = document.getElementById('saludo');
+
+    if (nombre && apellido && saludo) {
+      saludo.textContent = `Bienvenido, ${nombre} ${apellido}`;
+    }
+
     document.getElementById('logoutBtn').addEventListener('click', () => {
       // Limpiar sesión y redirigir reemplazando historial
       localStorage.clear();

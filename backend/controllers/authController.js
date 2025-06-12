@@ -1,34 +1,115 @@
+import { enviarCorreoRecuperacion, enviarCorreoConfirmacion } from '../config/email.js';
 import bcrypt from 'bcrypt';
-import { buscarUsuarioPorCorreo, 
-    crearUsuario, 
-    obtenerRolPorId 
+import crypto from 'crypto';
+import { pool } from '../config/db.js';
+import {
+  buscarUsuarioPorCorreo,
+  crearUsuario,
+  obtenerRolPorId
 } from '../models/userModel.js';
 
 export const register = async (req, res) => {
-    const {nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, contraseña, id_rol} = req.body;
-    // Validación básica
-    if (!nombre || !apellido || !correo || !cedula || !telefono || !direccion || !fecha_registro || !contraseña || !id_rol) {
-        return res.status(400).json({ message: 'Todos los campos son obligatorios' });
-    }
-    const userExistente = await buscarUsuarioPorCorreo(correo);
-    if (userExistente) {
-        return res.status(400).json({ message: 'Usuario ya registrado'});
-    }
-    const hash = await bcrypt.hash(contraseña, 10);
-    await crearUsuario(nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, hash, id_rol);
-    res.status(201).json({ message: 'Usuario creado exitosamente'});
-}
+  const { nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, contraseña, id_rol } = req.body;
+
+  if (!nombre || !apellido || !correo || !cedula || !telefono || !direccion || !fecha_registro || !contraseña || !id_rol) {
+    return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+  }
+
+  const userExistente = await buscarUsuarioPorCorreo(correo);
+  if (userExistente) {
+    return res.status(400).json({ message: 'Usuario ya registrado' });
+  }
+
+  const hash = await bcrypt.hash(contraseña, 10);
+  await crearUsuario(nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, hash, id_rol);
+  await enviarCorreoConfirmacion(correo, nombre);
+
+  res.status(201).json({ message: 'Usuario creado exitosamente' });
+};
+
 export const login = async (req, res) => {
-    const { correo, contraseña } = req.body;
-    if (!correo || !contraseña) {
-        return res.status(400).json({ message: 'Correo y contraseña son obligatorios' });
+  const { correo, contraseña } = req.body;
+
+  if (!correo || !contraseña) {
+    return res.status(400).json({ message: 'Correo y contraseña son obligatorios' });
+  }
+
+  const user = await buscarUsuarioPorCorreo(correo);
+  const credencialesValidas = user && await bcrypt.compare(contraseña, user.contraseña);
+
+  if (!credencialesValidas) {
+    return res.status(400).json({ message: 'Credenciales inválidas' });
+  }
+
+  const rolData = await obtenerRolPorId(user.id_rol);
+  const rol = typeof rolData === 'string' ? rolData.toLowerCase() : 'desconocido';
+
+  res.status(200).json({
+    message: 'Login exitoso',
+    rol,
+    usuario: {
+      usuario_id: user.usuario_id,
+      id_rol: user.id_rol,
+      nombre: user.nombre,
+      apellido: user.apellido
     }
-    const user = await buscarUsuarioPorCorreo(correo);
-    const credencialesValidas = user && await bcrypt.compare(contraseña, user.contraseña);
-    if (!credencialesValidas) {
-        return res.status(400).json({ message: 'Credenciales inválidas' });
+  });
+};
+
+// ✅ Envío de enlace de recuperación con token
+export const solicitarRecuperacion = async (req, res) => {
+  const { correo } = req.body;
+
+  try {
+    const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Correo no encontrado' });
     }
-    const rolData = await obtenerRolPorId(user.id_rol);
-    const rol = typeof rolData === 'string' ? rolData.toLowerCase() : 'desconocido';
-    res.status(200).json({ message: 'Login exitoso', rol });
-}
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expira = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+
+    await pool.query(
+      'UPDATE usuarios SET reset_token = ?, reset_token_expira = ? WHERE correo = ?',
+      [token, expira, correo]
+    );
+
+    const resetLink = `http://localhost:3000/pages/reset.html?token=${token}&correo=${correo}`;
+
+    await enviarCorreoRecuperacion(correo, rows[0].nombre, resetLink);
+
+    res.json({ message: 'Correo de recuperación enviado' });
+
+  } catch (error) {
+    console.error('Error al solicitar recuperación:', error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+};
+
+// ✅ Cambio de contraseña usando el token
+export const cambiarContrasena = async (req, res) => {
+  const { correo, token, nuevaContrasena } = req.body;
+
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM usuarios WHERE correo = ? AND reset_token = ? AND reset_token_expira > NOW()',
+      [correo, token]
+    );
+
+    if (rows.length === 0) {
+      return res.status(400).json({ message: 'Token inválido o expirado' });
+    }
+
+    const hash = await bcrypt.hash(nuevaContrasena, 10);
+    await pool.query(
+      'UPDATE usuarios SET contraseña = ?, reset_token = NULL, reset_token_expira = NULL WHERE correo = ?',
+      [hash, correo]
+    );
+
+    res.json({ message: 'Contraseña actualizada correctamente' });
+
+  } catch (error) {
+    console.error('Error al cambiar contraseña:', error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+};

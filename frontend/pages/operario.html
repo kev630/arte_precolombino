@@ -1,18 +1,46 @@
-<!-- cliente.html (igual estructura para operario y admin cambiando el título) -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <title>Operario</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/venta.js" defer></script>
 </head>
 <body>
   <h2>Bienvenido Operario</h2>
-   <button id="logoutBtn">Cerrar sesión</button>
-<script>
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    window.location.replace('/index.html'); // Redirige al archivo que borra la sesión
-  });
-</script>
+
+  <form id="formVenta">
+    <label for="producto_id">ID del Producto:</label>
+    <input type="number" id="producto_id" required><br>
+
+    <label for="cantidad">Cantidad:</label>
+    <input type="number" id="cantidad" required><br>
+
+    <button type="submit">Registrar Venta</button>
+  </form>
+
+  <button id="logoutBtn">Cerrar sesión</button>
+
+  <script>
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.clear();
+      window.location.replace('/index.html');
+    });
+
+    document.getElementById('formVenta').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usuario_id = localStorage.getItem('usuario_id');
+      const producto_id = parseInt(document.getElementById('producto_id').value);
+      const cantidad = parseInt(document.getElementById('cantidad').value);
+
+      if (!usuario_id) {
+        alert('Usuario no identificado.');
+        return;
+      }
+
+      const productos = [{ producto_id, cantidad }];
+      await registrarVenta(parseInt(usuario_id), productos);
+    });
+  </script>
 </body>
 </html>

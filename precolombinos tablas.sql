@@ -85,3 +85,7 @@ FOREIGN KEY (`producto_id`)
 REFERENCES `precolombinos`.`productos` (`producto_id`)
 ON DELETE CASCADE
 );
+
+ALTER TABLE usuarios
+ADD COLUMN reset_token VARCHAR(255) DEFAULT NULL,
+ADD COLUMN reset_token_expira DATETIME DEFAULT NULL;
