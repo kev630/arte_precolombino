@@ -1,21 +1,17 @@
-import { pool } from '../config/db.js';
+// backend/controllers/productoController.js
+import {
+  obtenerProductos,
+  agregarProducto as modeloAgregar,
+  actualizarProducto as modeloActualizar,
+  eliminarProducto as modeloEliminar
+} from '../models/productoModel.js';
 
+import { pool } from '../config/db.js'; // Solo para obtener el stock
+
+// Obtener todos los productos
 export const listarProductos = async (req, res) => {
   try {
-    const [productos] = await pool.query(`
-      SELECT 
-        p.producto_id,
-        pi.nombre_pieza,
-        c.cultura,
-        t.tamanio,
-        p.precio,
-        p.stock
-      FROM productos p
-      JOIN piezas pi ON p.piezas_id = pi.piezas_id
-      JOIN cultura c ON p.cultura_id = c.cultura_id
-      JOIN tamanio t ON p.tamanio_id = t.tamanio_id
-    `);
-
+    const productos = await obtenerProductos();
     res.json(productos);
   } catch (error) {
     console.error('Error al obtener productos:', error);
@@ -23,6 +19,7 @@ export const listarProductos = async (req, res) => {
   }
 };
 
+// Obtener solo el stock de un producto
 export const obtenerStockProducto = async (req, res) => {
   const { id } = req.params;
 
@@ -40,5 +37,46 @@ export const obtenerStockProducto = async (req, res) => {
   } catch (error) {
     console.error('Error al obtener stock:', error);
     res.status(500).json({ message: 'Error al obtener stock' });
+  }
+};
+
+// Agregar nuevo producto
+export const agregarProducto = async (req, res) => {
+  try {
+    await modeloAgregar(req.body);
+    res.status(201).json({ message: 'Producto agregado exitosamente' });
+  } catch (error) {
+    console.error('Error al agregar producto:', error);
+    res.status(500).json({ message: 'Error al agregar producto' });
+  }
+};
+
+// Editar producto existente
+export const editarProducto = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const resultado = await modeloActualizar(id, req.body);
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+    res.json({ message: 'Producto actualizado correctamente' });
+  } catch (error) {
+    console.error('Error al editar producto:', error);
+    res.status(500).json({ message: 'Error al editar producto' });
+  }
+};
+
+// Eliminar producto
+export const eliminarProducto = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const resultado = await modeloEliminar(id);
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+    res.json({ message: 'Producto eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar producto:', error);
+    res.status(500).json({ message: 'Error al eliminar producto' });
   }
 };

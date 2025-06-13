@@ -5,6 +5,9 @@ export const obtenerProductos = async () => {
   const [rows] = await pool.query(`
     SELECT 
       p.producto_id,
+      p.piezas_id,
+      p.cultura_id,
+      p.tamanio_id,
       pi.nombre_pieza,
       c.cultura,
       t.tamanio,
@@ -16,4 +19,28 @@ export const obtenerProductos = async () => {
     JOIN tamanio t ON p.tamanio_id = t.tamanio_id
   `);
   return rows;
+};
+
+export const agregarProducto = async ({ piezas_id, cultura_id, tamanio_id, precio, stock }) => {
+  const [result] = await pool.query(
+    'INSERT INTO productos (piezas_id, cultura_id, tamanio_id, precio, stock) VALUES (?, ?, ?, ?, ?)',
+    [piezas_id, cultura_id, tamanio_id, precio, stock]
+  );
+  return result;
+};
+
+export const actualizarProducto = async (id, { piezas_id, cultura_id, tamanio_id, precio, stock }) => {
+  const [result] = await pool.query(
+    'UPDATE productos SET piezas_id = ?, cultura_id = ?, tamanio_id = ?, precio = ?, stock = ? WHERE producto_id = ?',
+    [piezas_id, cultura_id, tamanio_id, precio, stock, id]
+  );
+  return result;
+};
+
+export const eliminarProducto = async (id) => {
+  const [result] = await pool.query(
+    'DELETE FROM productos WHERE producto_id = ?',
+    [id]
+  );
+  return result;
 };
