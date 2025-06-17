@@ -51,12 +51,13 @@ export const login = async (req, res) => {
       usuario_id: user.usuario_id,
       id_rol: user.id_rol,
       nombre: user.nombre,
-      apellido: user.apellido
+      apellido: user.apellido,
+      correo: user.correo
     }
   });
 };
 
-// ✅ Envío de enlace de recuperación con token
+// Envío de enlace de recuperación con token
 export const solicitarRecuperacion = async (req, res) => {
   const { correo } = req.body;
 

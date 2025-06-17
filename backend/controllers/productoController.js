@@ -42,12 +42,22 @@ export const obtenerStockProducto = async (req, res) => {
 
 // Agregar nuevo producto
 export const agregarProducto = async (req, res) => {
+  const { piezas_id, cultura_id, tamanio_id, precio, stock } = req.body;
+
+  console.log('➡️ Datos recibidos:', req.body);
+
+  if (!piezas_id || !cultura_id || !tamanio_id || !precio || !stock) {
+    console.warn('⚠️ Faltan campos');
+    return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+  }
+
   try {
-    await modeloAgregar(req.body);
+    const resultado = await modeloAgregar({ piezas_id, cultura_id, tamanio_id, precio, stock });
+    console.log('✅ Producto agregado:', resultado);
     res.status(201).json({ message: 'Producto agregado exitosamente' });
   } catch (error) {
-    console.error('Error al agregar producto:', error);
-    res.status(500).json({ message: 'Error al agregar producto' });
+    console.error('❌ Error SQL al agregar producto:', error.message);
+    res.status(500).json({ message: 'Error al agregar producto', error: error.message });
   }
 };
 

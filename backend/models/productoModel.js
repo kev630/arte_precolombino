@@ -23,9 +23,9 @@ export const obtenerProductos = async () => {
 
 export const agregarProducto = async ({ piezas_id, cultura_id, tamanio_id, precio, stock }) => {
   const [result] = await pool.query(
-    'INSERT INTO productos (piezas_id, cultura_id, tamanio_id, precio, stock) VALUES (?, ?, ?, ?, ?)',
-    [piezas_id, cultura_id, tamanio_id, precio, stock]
-  );
+  'INSERT INTO productos (piezas_id, cultura_id, tamanio_id, precio, stock, fecha_modificacion) VALUES (?, ?, ?, ?, ?, NOW())',
+  [piezas_id, cultura_id, tamanio_id, precio, stock]
+);
   return result;
 };
 

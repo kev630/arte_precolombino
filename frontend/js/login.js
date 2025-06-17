@@ -15,21 +15,20 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = await res.json();
 
     if (res.ok) {
-      // ✅ Guardar usuario_id en localStorage
-      localStorage.setItem('usuario_id', data.usuario.usuario_id);
-      localStorage.setItem('nombre', data.usuario.nombre);
-      localStorage.setItem('apellido', data.usuario.apellido);
-      localStorage.setItem('rol', data.usuario.id_rol);
+  localStorage.setItem('usuario_id', data.usuario.usuario_id);
+  localStorage.setItem('nombre', data.usuario.nombre);
+  localStorage.setItem('apellido', data.usuario.apellido);
+  localStorage.setItem('rol', data.usuario.id_rol);
+  localStorage.setItem('correo', data.usuario.correo); // 👈 AÑADE ESTA LÍNEA
 
-      // Redirigir según el rol
-      switch (data.usuario.id_rol) {
-        case 1: window.location.href = '../pages/cliente.html'; break;
-        case 2: window.location.href = '../pages/operario.html'; break;
-        case 3: window.location.href = '../pages/admin.html'; break;
-        default: alert('Rol desconocido'); break;
-      }
-
-    } else {
+  // Redirigir según el rol
+  switch (data.usuario.id_rol) {
+    case 1: window.location.href = '../pages/cliente.html'; break;
+    case 2: window.location.href = '../pages/operario.html'; break;
+    case 3: window.location.href = '../pages/admin.html'; break;
+    default: alert('Rol desconocido'); break;
+  }
+} else {
       alert(data.message || 'Error en el login');
     }
 

@@ -147,34 +147,33 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('formCultura').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const cultura = document.getElementById('nuevaCultura').value.trim();
+const cultura = document.getElementById('nuevaCultura').value.trim();
 
-  if (!cultura) {
-    alert('Debes ingresar un nombre de cultura');
-    return;
+if (!cultura) {
+  alert('Debes ingresar un nombre de cultura');
+  return;
+}
+
+try {
+  const res = await fetch('/api/culturas', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cultura })
+  });
+
+  const result = await res.json();
+
+  if (res.ok) {
+    alert(result.message);
+    document.getElementById('formCultura').reset();
+    cargarSelect('/api/culturas', culturaSelect);
+  } else {
+    alert(result.message || 'Error al agregar cultura');
   }
-
-  try {
-    const res = await fetch('/api/culturas', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cultura })
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      alert(result.message);
-      document.getElementById('formCultura').reset();
-      cargarSelect('/api/culturas', culturaSelect);
-    } else {
-      alert(result.message || 'Error al agregar cultura');
-    }
-
-  } catch (error) {
-    console.error('Error al crear cultura:', error);
-    alert('Error al enviar la solicitud');
-  }
+} catch (error) {
+  console.error('Error al crear cultura:', error);
+  alert('Error al enviar la solicitud');
+}
 });
 
 });

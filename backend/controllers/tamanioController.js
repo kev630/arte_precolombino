@@ -1,4 +1,4 @@
-import { obtenerTamanios, insertarTamanio, eliminarTamanioPorId } from '../models/tamanioModel.js';
+import { obtenerTamanios, insertarTamanio } from '../models/tamanioModel.js';
 
 // Listar todos los tamaños
 export const listarTamanios = async (req, res) => {
@@ -11,35 +11,19 @@ export const listarTamanios = async (req, res) => {
   }
 };
 
-// Crear un nuevo tamaño
+// Crear nuevo tamaño
 export const crearTamanio = async (req, res) => {
   const { tamanio } = req.body;
 
   if (!tamanio) {
-    return res.status(400).json({ message: 'El nombre del tamaño es obligatorio' });
+    return res.status(400).json({ message: 'El tamaño es obligatorio' });
   }
 
   try {
     await insertarTamanio(tamanio);
-    res.json({ message: 'Tamaño creado correctamente' });
+    res.json({ message: 'Tamaño agregado correctamente' });
   } catch (error) {
     console.error('Error al crear tamaño:', error);
     res.status(500).json({ message: 'Error al crear tamaño' });
-  }
-};
-
-// Eliminar tamaño por ID (opcional)
-export const eliminarTamanio = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const resultado = await eliminarTamanioPorId(id);
-    if (resultado.affectedRows === 0) {
-      return res.status(404).json({ message: 'Tamaño no encontrado' });
-    }
-    res.json({ message: 'Tamaño eliminado correctamente' });
-  } catch (error) {
-    console.error('Error al eliminar tamaño:', error);
-    res.status(500).json({ message: 'Error al eliminar tamaño' });
   }
 };
