@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 `fecha_registro` DATE NOT NULL,
 `contraseña` VARCHAR(255),
 `id_rol` INT,
+reset_token VARCHAR(255) DEFAULT NULL,
+reset_token_expira DATETIME DEFAULT NULL,
 FOREIGN KEY (`id_rol`) REFERENCES roles(`rol_id`),
 PRIMARY KEY (`usuario_id`)
 );
@@ -56,6 +58,8 @@ CREATE TABLE IF NOT EXISTS `productos` (
 `piezas_id` INT NOT NULL,
 `cultura_id` INT NOT NULL,
 `tamanio_id` INT NOT NULL,
+`descripcion` TEXT NOT NULL,
+`imagen` VARCHAR(255) DEFAULT NULL,
 `fecha_modificacion` DATE NOT NULL,
 `precio` DECIMAL(10,2) NOT NULL,
 `stock` INT NOT NULL,
@@ -85,7 +89,3 @@ FOREIGN KEY (`producto_id`)
 REFERENCES `precolombinos`.`productos` (`producto_id`)
 ON DELETE CASCADE
 );
-
-ALTER TABLE usuarios
-ADD COLUMN reset_token VARCHAR(255) DEFAULT NULL,
-ADD COLUMN reset_token_expira DATETIME DEFAULT NULL;

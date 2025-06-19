@@ -2,10 +2,14 @@ import cors from 'cors';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +19,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Rutas
 import authRoutes from './routes/authRoutes.js';
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
 
 import piezaRoutes from './routes/piezaRoutes.js';
 app.use('/api/piezas', piezaRoutes);

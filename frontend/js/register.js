@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const contraseña = getValue('contrasena');
             const id_rol = getValue('rol_id');
 
-            const response = await fetch('/api/usuarios/register', {
+            const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

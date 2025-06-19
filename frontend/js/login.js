@@ -1,4 +1,3 @@
-// frontend/js/login.js
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -15,20 +14,28 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = await res.json();
 
     if (res.ok) {
-  localStorage.setItem('usuario_id', data.usuario.usuario_id);
-  localStorage.setItem('nombre', data.usuario.nombre);
-  localStorage.setItem('apellido', data.usuario.apellido);
-  localStorage.setItem('rol', data.usuario.id_rol);
-  localStorage.setItem('correo', data.usuario.correo); // 👈 AÑADE ESTA LÍNEA
+      // ✅ Guardar token y datos del usuario en localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
-  // Redirigir según el rol
-  switch (data.usuario.id_rol) {
-    case 1: window.location.href = '../pages/cliente.html'; break;
-    case 2: window.location.href = '../pages/operario.html'; break;
-    case 3: window.location.href = '../pages/admin.html'; break;
-    default: alert('Rol desconocido'); break;
-  }
-} else {
+      // ✅ Redirigir según el rol
+      const rol = data.usuario.id_rol;
+      switch (rol) {
+        case 3: // admin
+        window.location.href = '/pages/admin.html';
+        break;
+        case 2: // operario
+        window.location.href = '/pages/operario.html';
+        break;
+        case 1: // cliente
+        window.location.href = '/pages/cliente.html';
+        break;
+        default:
+          alert('Rol no reconocido');
+        }
+
+
+    } else {
       alert(data.message || 'Error en el login');
     }
 
@@ -38,11 +45,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   }
 });
 
+// ✅ Manejo de enlace "¿Olvidaste tu contraseña?"
 document.addEventListener('DOMContentLoaded', () => {
   const enlace = document.getElementById('olvideContrasena');
   if (enlace) {
     enlace.addEventListener('click', (event) => {
-      event.preventDefault(); // ← importante
+      event.preventDefault();
       const correo = prompt('Ingresa tu correo para recuperar tu contraseña:');
       if (!correo) return;
 

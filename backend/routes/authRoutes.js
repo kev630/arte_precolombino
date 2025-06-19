@@ -1,4 +1,3 @@
-// backend/routes/authRoutes.js
 import express from 'express';
 import {
   login,
@@ -6,19 +5,19 @@ import {
   solicitarRecuperacion,
   cambiarContrasena
 } from '../controllers/authController.js';
+import { verificarUsuario } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Registro de usuario
-router.post('/usuarios/register', register);
+// Rutas de autenticación
+router.post('/register', register);
+router.post('/login', login);
+router.post('/solicitar-recuperacion', solicitarRecuperacion);
+router.post('/cambiar-contrasena', cambiarContrasena);
 
-// Login
-router.post('/auth/login', login);
-
-// Solicitud de recuperación de contraseña (envía enlace con token)
-router.post('/auth/solicitar-recuperacion', solicitarRecuperacion);
-
-// Cambio de contraseña usando el token
-router.post('/auth/cambiar-contrasena', cambiarContrasena);
+// ✅ Ruta protegida para verificar token y devolver datos del usuario
+router.get('/verificar', verificarUsuario, (req, res) => {
+  res.json({ usuario: req.usuario }); // Devuelve info del token decodificado
+});
 
 export default router;

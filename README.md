@@ -34,3 +34,29 @@ import tamanioRoutes from './routes/tamanioRoutes.js';
 app.use('/api/piezas', piezaRoutes);
 app.use('/api/cultura', culturaRoutes);
 app.use('/api/tamanio', tamanioRoutes);
+
+
+
+
+
+
+
+
+
+const crearFilaProducto = (producto) => {
+  return `
+    <tr>
+      <td>${producto.producto_id}</td>
+      <td>${producto.nombre_pieza}</td>
+      <td>${producto.cultura}</td>
+      <td>${producto.tamanio}</td>
+      <td>${producto.precio}</td>
+      <td>${producto.stock}</td>
+      <td><img src="${producto.imagen}" width="80" /></td>
+      <td>
+        <button onclick="editar(${producto.producto_id})">Editar</button>
+        <button onclick="eliminar(${producto.producto_id})">Eliminar</button>
+      </td>
+    </tr>
+  `;
+};

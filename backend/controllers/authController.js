@@ -1,6 +1,7 @@
 import { enviarCorreoRecuperacion, enviarCorreoConfirmacion } from '../config/email.js';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import { pool } from '../config/db.js';
 import {
   buscarUsuarioPorCorreo,
@@ -34,25 +35,29 @@ export const login = async (req, res) => {
     return res.status(400).json({ message: 'Correo y contraseña son obligatorios' });
   }
 
-  const user = await buscarUsuarioPorCorreo(correo);
-  const credencialesValidas = user && await bcrypt.compare(contraseña, user.contraseña);
+  const usuario = await buscarUsuarioPorCorreo(correo);
+  const credencialesValidas = usuario && await bcrypt.compare(contraseña, usuario.contraseña);
 
   if (!credencialesValidas) {
     return res.status(400).json({ message: 'Credenciales inválidas' });
   }
 
-  const rolData = await obtenerRolPorId(user.id_rol);
-  const rol = typeof rolData === 'string' ? rolData.toLowerCase() : 'desconocido';
+  // ✅ Generar token JWT
+  const token = jwt.sign(
+    { correo: usuario.correo, id_rol: usuario.id_rol },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  );
 
   res.status(200).json({
-    message: 'Login exitoso',
-    rol,
+    message: 'Inicio de sesión exitoso',
+    token,
     usuario: {
-      usuario_id: user.usuario_id,
-      id_rol: user.id_rol,
-      nombre: user.nombre,
-      apellido: user.apellido,
-      correo: user.correo
+      usuario_id: usuario.usuario_id,
+      id_rol: usuario.id_rol,
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
+      correo: usuario.correo
     }
   });
 };

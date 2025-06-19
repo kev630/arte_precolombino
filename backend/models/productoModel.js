@@ -21,19 +21,37 @@ export const obtenerProductos = async () => {
   return rows;
 };
 
-export const agregarProducto = async ({ piezas_id, cultura_id, tamanio_id, precio, stock }) => {
+export const agregarProducto = async ({ piezas_id, cultura_id, tamanio_id, precio, stock, descripcion, imagen }) => {
   const [result] = await pool.query(
-  'INSERT INTO productos (piezas_id, cultura_id, tamanio_id, precio, stock, fecha_modificacion) VALUES (?, ?, ?, ?, ?, NOW())',
-  [piezas_id, cultura_id, tamanio_id, precio, stock]
+  'INSERT INTO productos (piezas_id, cultura_id, tamanio_id, precio, stock, descripcion, imagen, fecha_modificacion) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
+  [piezas_id, cultura_id, tamanio_id, precio, stock, descripcion, imagen]
 );
   return result;
 };
 
-export const actualizarProducto = async (id, { piezas_id, cultura_id, tamanio_id, precio, stock }) => {
+// backend/models/productoModel.js
+
+export const actualizarProducto = async (id, datos) => {
+  if (!datos || Object.keys(datos).length === 0) {
+    throw new Error('No se proporcionaron datos para actualizar');
+  }
+
+  const campos = [];
+  const valores = [];
+
+  for (const [clave, valor] of Object.entries(datos)) {
+    campos.push(`${clave} = ?`);
+    valores.push(valor);
+  }
+
+  campos.push('fecha_modificacion = NOW()');
+  valores.push(id);
+
   const [result] = await pool.query(
-    'UPDATE productos SET piezas_id = ?, cultura_id = ?, tamanio_id = ?, precio = ?, stock = ? WHERE producto_id = ?',
-    [piezas_id, cultura_id, tamanio_id, precio, stock, id]
+    `UPDATE productos SET ${campos.join(', ')} WHERE producto_id = ?`,
+    valores
   );
+
   return result;
 };
 
