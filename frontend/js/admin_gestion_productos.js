@@ -1,4 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ✅ Agrega esto al inicio dentro del DOMContentLoaded
+  function getTokenHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+      'Authorization': `Bearer ${token}`
+    };
+  }
+
   const token = localStorage.getItem('token');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
 
@@ -33,10 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const imagenInput = document.getElementById('imagen');
   let editandoId = null;
 
-  const getTokenHeaders = () => ({
-    Authorization: `Bearer ${token}`
-  });
-
   const cargarSelect = async (url, select) => {
     const res = await fetch(url, { headers: getTokenHeaders() });
     const datos = await res.json();
@@ -52,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const listarProductos = async () => {
     const res = await fetch('/api/productos', { headers: getTokenHeaders() });
     const productos = await res.json();
-
     tabla.innerHTML = '';
     productos.forEach(p => {
       const fila = document.createElement('tr');
@@ -99,9 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const res = await fetch(url, {
         method,
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData
       });
       const result = await res.json();
@@ -157,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const nombre_pieza = document.getElementById('nuevaPieza').value.trim();
     if (!nombre_pieza) return alert('Ingresa un nombre válido');
-
     const res = await fetch('/api/piezas', {
       method: 'POST',
       headers: {
@@ -170,14 +170,46 @@ document.addEventListener('DOMContentLoaded', () => {
     alert(result.message);
     e.target.reset();
     cargarSelect('/api/piezas', piezasSelect);
+    listarPiezas();
   });
 
-  // Formulario tamaño
+  // Eliminar pieza
+  const listarPiezas = async () => {
+    const tabla = document.getElementById('tablaPiezas');
+    const res = await fetch('/api/piezas', { headers: getTokenHeaders() });
+    const piezas = await res.json();
+    tabla.innerHTML = '';
+    piezas.forEach(p => {
+      tabla.innerHTML += `
+        <tr>
+          <td>${p.piezas_id}</td>
+          <td>${p.nombre_pieza}</td>
+          <td><button class="eliminarPieza" data-id="${p.piezas_id}">🗑️</button></td>
+        </tr>`;
+    });
+  };
+
+  document.getElementById('tablaPiezas').addEventListener('click', async (e) => {
+    if (e.target.classList.contains('eliminarPieza')) {
+      const id = e.target.dataset.id;
+      if (confirm('¿Eliminar pieza?')) {
+        const res = await fetch(`/api/piezas/${id}`, {
+          method: 'DELETE',
+          headers: getTokenHeaders()
+        });
+        const result = await res.json();
+        alert(result.message);
+        cargarSelect('/api/piezas', piezasSelect);
+        listarPiezas();
+      }
+    }
+  });
+
+  // Tamaños
   document.getElementById('formTamanio').addEventListener('submit', async (e) => {
     e.preventDefault();
     const tamanio = document.getElementById('nuevoTamanio').value.trim();
     if (!tamanio) return alert('Ingresa un tamaño válido');
-
     const res = await fetch('/api/tamanios', {
       method: 'POST',
       headers: {
@@ -190,14 +222,45 @@ document.addEventListener('DOMContentLoaded', () => {
     alert(result.message);
     e.target.reset();
     cargarSelect('/api/tamanios', tamanioSelect);
+    listarTamanios();
   });
 
-  // Formulario cultura
+  const listarTamanios = async () => {
+    const tabla = document.getElementById('tablaTamanios');
+    const res = await fetch('/api/tamanios', { headers: getTokenHeaders() });
+    const tamanios = await res.json();
+    tabla.innerHTML = '';
+    tamanios.forEach(t => {
+      tabla.innerHTML += `
+        <tr>
+          <td>${t.tamanio_id}</td>
+          <td>${t.tamanio}</td>
+          <td><button class="eliminarTamanio" data-id="${t.tamanio_id}">🗑️</button></td>
+        </tr>`;
+    });
+  };
+
+  document.getElementById('tablaTamanios').addEventListener('click', async (e) => {
+    if (e.target.classList.contains('eliminarTamanio')) {
+      const id = e.target.dataset.id;
+      if (confirm('¿Eliminar tamaño?')) {
+        const res = await fetch(`/api/tamanios/${id}`, {
+          method: 'DELETE',
+          headers: getTokenHeaders()
+        });
+        const result = await res.json();
+        alert(result.message);
+        cargarSelect('/api/tamanios', tamanioSelect);
+        listarTamanios();
+      }
+    }
+  });
+
+  // Culturas
   document.getElementById('formCultura').addEventListener('submit', async (e) => {
     e.preventDefault();
     const cultura = document.getElementById('nuevaCultura').value.trim();
-    if (!cultura) return alert('Ingresa un nombre de cultura');
-
+    if (!cultura) return alert('Ingresa una cultura válida');
     const res = await fetch('/api/culturas', {
       method: 'POST',
       headers: {
@@ -210,6 +273,38 @@ document.addEventListener('DOMContentLoaded', () => {
     alert(result.message);
     e.target.reset();
     cargarSelect('/api/culturas', culturaSelect);
+    listarCulturas();
+  });
+
+  const listarCulturas = async () => {
+    const tabla = document.getElementById('tablaCulturas');
+    const res = await fetch('/api/culturas', { headers: getTokenHeaders() });
+    const culturas = await res.json();
+    tabla.innerHTML = '';
+    culturas.forEach(c => {
+      tabla.innerHTML += `
+        <tr>
+          <td>${c.cultura_id}</td>
+          <td>${c.cultura}</td>
+          <td><button class="eliminarCultura" data-id="${c.cultura_id}">🗑️</button></td>
+        </tr>`;
+    });
+  };
+
+  document.getElementById('tablaCulturas').addEventListener('click', async (e) => {
+    if (e.target.classList.contains('eliminarCultura')) {
+      const id = e.target.dataset.id;
+      if (confirm('¿Eliminar cultura?')) {
+        const res = await fetch(`/api/culturas/${id}`, {
+          method: 'DELETE',
+          headers: getTokenHeaders()
+        });
+        const result = await res.json();
+        alert(result.message);
+        cargarSelect('/api/culturas', culturaSelect);
+        listarCulturas();
+      }
+    }
   });
 
   // Inicialización
@@ -217,4 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarSelect('/api/culturas', culturaSelect);
   cargarSelect('/api/tamanios', tamanioSelect);
   listarProductos();
+  listarPiezas();
+  listarTamanios();
+  listarCulturas();
 });

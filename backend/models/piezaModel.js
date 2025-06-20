@@ -8,3 +8,8 @@ export const obtenerPiezas = async () => {
 export const insertarPieza = async (nombre_pieza) => {
   await pool.query('INSERT INTO piezas (nombre_pieza) VALUES (?)', [nombre_pieza]);
 };
+
+export const borrarPiezaPorId = async (id) => {
+  const [resultado] = await pool.query('DELETE FROM piezas WHERE piezas_id = ?', [id]);
+  return resultado;
+};

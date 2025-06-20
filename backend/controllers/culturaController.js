@@ -1,4 +1,8 @@
-import { obtenerCulturas, insertarCultura } from '../models/culturaModel.js';
+import {
+  obtenerCulturas,
+  insertarCultura,
+  borrarCulturaPorId
+} from '../models/culturaModel.js';
 
 // Listar todas las culturas
 export const listarCulturas = async (req, res) => {
@@ -25,5 +29,27 @@ export const crearCultura = async (req, res) => {
   } catch (error) {
     console.error('Error al agregar cultura:', error);
     res.status(500).json({ message: 'Error al agregar cultura' });
+  }
+};
+
+// Eliminar una cultura
+export const eliminarCultura = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const resultado = await borrarCulturaPorId(id);
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ message: 'Cultura no encontrada' });
+    }
+
+    res.json({ message: 'Cultura eliminada correctamente' });
+  } catch (error) {
+    if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+      return res.status(400).json({ message: 'No se puede eliminar la cultura porque está asociada a productos' });
+    }
+
+    console.error('Error al eliminar cultura:', error);
+    res.status(500).json({ message: 'Error al eliminar cultura' });
   }
 };

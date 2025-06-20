@@ -1,13 +1,11 @@
 // register.js
 
-// Función de ayuda para evitar errores si falta un ID
 const getValue = (id) => {
     const el = document.getElementById(id);
     if (!el) throw new Error(`Elemento con id="${id}" no encontrado`);
     return el.value;
 };
 
-// Espera a que el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('registroForm');
     if (!form) {
@@ -27,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const direccion = getValue('direccion');
             const fecha_registro = getValue('fecha_registro');
             const contraseña = getValue('contrasena');
-            const id_rol = getValue('rol_id');
+            const id_rol = parseInt(getValue('rol_id'));
 
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
@@ -35,26 +33,33 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                nombre,
-                apellido,
-                correo,
-                cedula,
-                telefono,
-                direccion,
-                fecha_registro,
-                contraseña,
-                id_rol
-            })
+                    nombre,
+                    apellido,
+                    correo,
+                    cedula,
+                    telefono,
+                    direccion,
+                    fecha_registro,
+                    contraseña,
+                    id_rol
+                })
             });
 
-            const data = await response.json();
+            const text = await response.text();
 
-            if (response.ok) {
-                alert('Registro exitoso');
-                window.location.href = 'login.html';
-            } else {
-                alert(data.error || 'Error al registrar');
+            try {
+                const data = JSON.parse(text);
+                if (response.ok) {
+                    alert('Registro exitoso');
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.message || 'Error al registrar');
+                }
+            } catch (e) {
+                console.error('Respuesta inesperada del servidor:', text);
+                alert('Error inesperado: la respuesta no es JSON');
             }
+
         } catch (error) {
             console.error('Error:', error);
             alert(error.message || 'Hubo un problema al conectar con el servidor');

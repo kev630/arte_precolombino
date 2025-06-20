@@ -22,7 +22,9 @@ export const register = async (req, res) => {
   }
 
   const hash = await bcrypt.hash(contraseña, 10);
-  await crearUsuario(nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, hash, id_rol);
+  const rolNumerico = parseInt(id_rol);
+  await crearUsuario(nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, hash, rolNumerico);
+  // await crearUsuario(nombre, apellido, correo, cedula, telefono, direccion, fecha_registro, hash, id_rol);
   await enviarCorreoConfirmacion(correo, nombre);
 
   res.status(201).json({ message: 'Usuario creado exitosamente' });

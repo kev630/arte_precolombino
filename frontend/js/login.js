@@ -22,7 +22,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       const rol = data.usuario.id_rol;
       switch (rol) {
         case 3: // admin
-        window.location.href = '/pages/admin.html';
+        window.location.href = '/pages/admin_dashboard.html';
         break;
         case 2: // operario
         window.location.href = '/pages/operario.html';
