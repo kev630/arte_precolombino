@@ -1,9 +1,11 @@
+/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Estilo base */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(to right, #1d3557, #457b9d);
@@ -13,65 +15,119 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
+  padding: 1rem;
+  overflow-x: hidden;
 }
 
-h1, h2 {
+/* Animación de entrada suave */
+.container {
+  text-align: center;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Títulos destacados */
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+  font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #f1faee;
+  color: #a8dadc;
 }
 
+/* Formulario elegante */
 form {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(5px);
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 300px;
+  width: 100%;
+  max-width: 350px;
+  transition: transform 0.3s ease;
 }
 
+form:hover {
+  transform: translateY(-5px);
+}
+
+/* Campos */
 input, select {
-  padding: 0.8rem;
+  padding: 0.9rem;
   border: none;
   border-radius: 5px;
-  outline: none;
   font-size: 1rem;
   background-color: #f1faee;
   color: #1d3557;
+  transition: background-color 0.3s ease;
 }
 
 input::placeholder {
   color: #457b9d;
 }
 
+/* Botón llamativo */
 button {
-  padding: 0.8rem;
+  padding: 0.9rem;
   border: none;
   border-radius: 5px;
   background-color: #e63946;
   color: #f1faee;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
   background-color: #a4161a;
+  transform: scale(1.03);
 }
 
+/* Enlaces */
 a {
   color: #a8dadc;
   text-decoration: none;
   margin: 0 1rem;
   font-weight: bold;
+  transition: color 0.3s ease;
 }
 
 a:hover {
   text-decoration: underline;
+  color: #ffffff;
 }
 
-.container {
-  text-align: center;
+/* Responsive */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  form {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  button {
+    font-size: 1rem;
+  }
 }
